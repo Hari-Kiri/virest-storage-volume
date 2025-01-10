@@ -1,4 +1,4 @@
-package storagePool
+package storageVolume
 
 import (
 	"fmt"
