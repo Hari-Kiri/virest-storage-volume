@@ -7,7 +7,7 @@ import (
 
 	"github.com/Hari-Kiri/goalMakeHandler"
 	"github.com/Hari-Kiri/temboLog"
-	"github.com/Hari-Kiri/virest-storage-pool/handlers/storagePool"
+	"github.com/Hari-Kiri/virest-storage-volume/handlers/storageVolume"
 )
 
 func main() {
@@ -25,12 +25,12 @@ func main() {
 	}
 
 	// Convert environment variable which is hold port number to int
-	portFromEnv, errorGetPortFromEnv := strconv.Atoi(os.Getenv("VIREST_STORAGE_POOL_APPLICATION_PORT"))
+	portFromEnv, errorGetPortFromEnv := strconv.Atoi(os.Getenv("VIREST_STORAGE_VOLUME_APPLICATION_PORT"))
 	if errorGetPortFromEnv != nil {
 		temboLog.FatalLogging("failed get port from env:", errorGetPortFromEnv)
 	}
 
 	// Make handler
-	goalMakeHandler.HandleRequest(storagePool.Authenticate, "/storage-pool/authenticate")
-	goalMakeHandler.Serve(os.Getenv("VIREST_STORAGE_POOL_APPLICATION_NAME"), portFromEnv)
+	goalMakeHandler.HandleRequest(storageVolume.Authenticate, "/storage-volume/authenticate")
+	goalMakeHandler.Serve(os.Getenv("VIREST_STORAGE_VOLUME_APPLICATION_NAME"), portFromEnv)
 }
