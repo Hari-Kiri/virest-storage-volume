@@ -55,6 +55,8 @@ func VolumeListAll(connection virest.Connection, poolUuid string) ([]volumeListA
 	result := make([]volumeListAll.Data, len(storageVolumes))
 	waitGroup.Add(len(storageVolumes) * 4)
 	for i := 0; i < len(storageVolumes); i++ {
+		defer storageVolumes[i].Free()
+
 		go func(index int) {
 			defer waitGroup.Done()
 
