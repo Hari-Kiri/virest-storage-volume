@@ -13,11 +13,10 @@ type Response struct {
 }
 
 type Data struct {
-	Key                string                 `json:"key"`
-	Name               string                 `json:"name"`
-	Path               string                 `json:"path"`
-	Type               libvirt.StorageVolType `json:"Type"`
-	Capacity           uint64                 `json:"capacity"`
-	CurrentAllocation  uint64                 `json:"currentAllocation"`
-	PhysicalAllocation uint64                 `json:"physicalAllocation"`
+	Name       string                 `json:"name"`
+	Path       string                 `json:"path"`
+	Type       libvirt.StorageVolType `json:"Type"`
+	Capacity   uint64                 `json:"capacity"`
+	Allocation uint64                 `json:"allocation"`
+	Physical   uint64                 `json:"physical"`
 }
