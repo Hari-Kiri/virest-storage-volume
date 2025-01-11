@@ -13,6 +13,22 @@ import (
 // Collect the list of all storage volumes inside a pool. The physical on disk usage
 // can be different than the calculated allocation value as is the case with qcow2
 // files.
+//
+// Storage Volume Type:
+//
+//   - 0 = (0x0) : Regular file based volumes
+//
+//   - 1 = (0x1) : Block based volumes
+//
+//   - 2 = (0x2) : Directory-passthrough based volume
+//
+//   - 3 = (0x3) : Network volumes like RBD (RADOS Block Device)
+//
+//   - 4 = (0x4) : Network accessible directory that can contain other network volumes
+//
+//   - 5 = (0x5) : Ploop based volumes
+//
+//   - 6 = (0x6)
 func VolumeListAll(connection virest.Connection, poolUuid string) ([]volumeListAll.Data, virest.Error, bool) {
 	var (
 		virestError virest.Error
