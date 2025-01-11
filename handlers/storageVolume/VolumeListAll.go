@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/Hari-Kiri/temboLog"
-	"github.com/Hari-Kiri/virest-storage-pool/modules/storagePool"
 	"github.com/Hari-Kiri/virest-storage-volume/modules/storageVolume"
 	"github.com/Hari-Kiri/virest-storage-volume/structures/volumeListAll"
 	"github.com/Hari-Kiri/virest-utilities/utils"
@@ -18,7 +17,7 @@ func VolumeListAll(responseWriter http.ResponseWriter, request *http.Request) {
 		httpBody        volumeListAll.Response
 	)
 
-	connection, errorRequestPrecondition, isError := storagePool.RequestPrecondition(
+	connection, errorRequestPrecondition, isError := storageVolume.RequestPrecondition(
 		request,
 		http.MethodGet,
 		&requestBodyData,
@@ -39,15 +38,15 @@ func VolumeListAll(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	defer connection.Close()
 
-	result, errorGetPoolList, isErrorGetPoolList := storageVolume.VolumeListAll(connection, requestBodyData.PoolUuid)
-	if isErrorGetPoolList {
+	result, errorGetVolumeList, isErrorGetVolumeList := storageVolume.VolumeListAll(connection, requestBodyData.PoolUuid)
+	if isErrorGetVolumeList {
 		httpBody.Response = false
-		httpBody.Code = utils.HttpErrorCode(errorGetPoolList.Code)
-		httpBody.Error = errorGetPoolList
+		httpBody.Code = utils.HttpErrorCode(errorGetVolumeList.Code)
+		httpBody.Error = errorGetVolumeList
 		utils.JsonResponseBuilder(httpBody, responseWriter, httpBody.Code)
 		temboLog.ErrorLogging(
 			"failed get list of storage volume [ "+request.URL.Path+" ], requested from "+request.RemoteAddr+":",
-			errorGetPoolList.Message,
+			errorGetVolumeList.Message,
 		)
 		return
 	}
