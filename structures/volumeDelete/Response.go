@@ -1,4 +1,4 @@
-package volumeCreate
+package volumeDelete
 
 import (
 	"github.com/Hari-Kiri/virest-utilities/utils/structures/virest"
@@ -7,10 +7,5 @@ import (
 type Response struct {
 	Response bool         `json:"response"`
 	Code     int          `json:"code"`
-	Data     Key          `json:"data"`
 	Error    virest.Error `json:"error"`
-}
-
-type Key struct {
-	Key string `json:"key"`
 }
