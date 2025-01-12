@@ -34,5 +34,6 @@ func main() {
 	goalMakeHandler.HandleRequest(storageVolume.Authenticate, "/storage-volume/authenticate")
 	goalMakeHandler.HandleRequest(storageVolume.VolumeListAll, "/storage-volume/list-all")
 	goalMakeHandler.HandleRequest(storageVolume.VolumeCreate, "/storage-volume/create")
+	goalMakeHandler.HandleRequest(storageVolume.VolumeDelete, "/storage-volume/delete")
 	goalMakeHandler.Serve(os.Getenv("VIREST_STORAGE_VOLUME_APPLICATION_NAME"), portFromEnv)
 }
