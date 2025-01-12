@@ -7,6 +7,15 @@ import (
 	"libvirt.org/go/libvirt"
 )
 
+// Delete the storage volume from the pool.
+//
+// Option:
+//
+//   - 0 = (0x0) : Delete metadata only (fast)
+//
+//   - 1 = (0x1; 1 << 0) : Clear all data to zeros (slow)
+//
+//   - 2 = (0x2; 1 << 1) : Force removal of volume, even if in use
 func VolumeDelete(connection virest.Connection, poolUuid, volumeName string, option uint) (virest.Error, bool) {
 	var (
 		virestError virest.Error
@@ -29,6 +38,5 @@ func VolumeDelete(connection virest.Connection, poolUuid, volumeName string, opt
 	}
 
 	virestError.Error, isError = storageVolumeObject.Delete(libvirt.StorageVolDeleteFlags(option)).(libvirt.Error)
-
 	return virestError, isError
 }
