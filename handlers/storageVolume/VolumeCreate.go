@@ -60,6 +60,6 @@ func VolumeCreate(responseWriter http.ResponseWriter, request *http.Request) {
 	httpBody.Code = http.StatusOK
 	httpBody.Data = result
 	utils.JsonResponseBuilder(httpBody, responseWriter, httpBody.Code)
-	temboLog.InfoLogging("storage volume created on pool", requestBodyData.PoolUuid, "hypervisor", request.Header["Hypervisor-Uri"][0],
+	temboLog.InfoLogging("storage volume created on pool", requestBodyData.PoolUuid, "inside hypervisor", request.Header["Hypervisor-Uri"][0],
 		"[", request.URL.Path, "]")
 }
