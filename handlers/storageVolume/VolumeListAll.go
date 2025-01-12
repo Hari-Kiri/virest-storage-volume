@@ -55,6 +55,6 @@ func VolumeListAll(responseWriter http.ResponseWriter, request *http.Request) {
 	httpBody.Code = http.StatusOK
 	httpBody.Data = result
 	utils.JsonResponseBuilder(httpBody, responseWriter, httpBody.Code)
-	temboLog.InfoLogging("listing storage volume on pool", requestBodyData.PoolUuid, "hypervisor", request.Header["Hypervisor-Uri"][0],
+	temboLog.InfoLogging("listing storage volume on pool", requestBodyData.PoolUuid, "inside hypervisor", request.Header["Hypervisor-Uri"][0],
 		"[", request.URL.Path, "]")
 }
