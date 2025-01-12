@@ -7,10 +7,10 @@ import (
 type Response struct {
 	Response bool         `json:"response"`
 	Code     int          `json:"code"`
-	Data     Name         `json:"data"`
+	Data     Key          `json:"data"`
 	Error    virest.Error `json:"error"`
 }
 
-type Name struct {
-	Name string `json:"Name"`
+type Key struct {
+	Key string `json:"key"`
 }

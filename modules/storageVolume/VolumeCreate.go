@@ -19,7 +19,7 @@ import (
 //   - 2 = (0x2; 1 << 1) : perform a btrfs lightweight copy.
 //
 //   - 4 = (0x4; 1 << 2) : Validate the XML document against schema.
-func VolumeCreate(connection virest.Connection, poolUuid string, xmlConfig libvirtxml.StorageVolume, option uint) (volumeCreate.Name, virest.Error, bool) {
+func VolumeCreate(connection virest.Connection, poolUuid string, xmlConfig libvirtxml.StorageVolume, option uint) (volumeCreate.Key, virest.Error, bool) {
 	var (
 		virestError virest.Error
 		isError     bool
@@ -29,7 +29,7 @@ func VolumeCreate(connection virest.Connection, poolUuid string, xmlConfig libvi
 	virestError.Error, isError = errorGetStoragePoolObject.(libvirt.Error)
 	if isError {
 		virestError.Message = fmt.Sprintf("failed get storage pool object: %s", virestError.Message)
-		return volumeCreate.Name{}, virestError, isError
+		return volumeCreate.Key{}, virestError, isError
 	}
 	defer storagePoolObject.Free()
 
@@ -37,25 +37,25 @@ func VolumeCreate(connection virest.Connection, poolUuid string, xmlConfig libvi
 	virestError.Error, isError = errorMarshalXmlConfig.(libvirt.Error)
 	if isError {
 		virestError.Message = fmt.Sprintf("failed marshaling supplied storage volume xml config: %s", virestError.Message)
-		return volumeCreate.Name{}, virestError, isError
+		return volumeCreate.Key{}, virestError, isError
 	}
 
-	storageVolume, errorCreateStorageVolume := storagePoolObject.StorageVolCreateXML(marshalXmlConfig, libvirt.StorageVolCreateFlags(option))
-	virestError.Error, isError = errorCreateStorageVolume.(libvirt.Error)
+	storageVolumeObject, errorCreateStorageVolumeObject := storagePoolObject.StorageVolCreateXML(marshalXmlConfig, libvirt.StorageVolCreateFlags(option))
+	virestError.Error, isError = errorCreateStorageVolumeObject.(libvirt.Error)
 	if isError {
 		virestError.Message = fmt.Sprintf("failed create storage volume: %s", virestError.Message)
-		return volumeCreate.Name{}, virestError, isError
+		return volumeCreate.Key{}, virestError, isError
 	}
-	defer storageVolume.Free()
+	defer storageVolumeObject.Free()
 
-	storageVolumeName, errorGetStorageVolumeName := storageVolume.GetName()
+	storageVolumeName, errorGetStorageVolumeName := storageVolumeObject.GetKey()
 	virestError.Error, isError = errorGetStorageVolumeName.(libvirt.Error)
 	if isError {
 		virestError.Message = fmt.Sprintf("Failed to get the name of the created volume: %s", virestError.Message)
-		return volumeCreate.Name{}, virestError, isError
+		return volumeCreate.Key{}, virestError, isError
 	}
 
-	return volumeCreate.Name{
-		Name: storageVolumeName,
+	return volumeCreate.Key{
+		Key: storageVolumeName,
 	}, virestError, false
 }
