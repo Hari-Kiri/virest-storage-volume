@@ -8,6 +8,7 @@ import (
 	"github.com/Hari-Kiri/virest-storage-volume/structures/volumeListAll"
 	"github.com/Hari-Kiri/virest-utilities/utils/structures/virest"
 	"libvirt.org/go/libvirt"
+	"libvirt.org/go/libvirtxml"
 )
 
 // Collect the list of all storage volumes inside a pool. The physical on disk usage
@@ -53,7 +54,7 @@ func VolumeListAll(connection virest.Connection, poolUuid string) ([]volumeListA
 
 	var waitGroup sync.WaitGroup
 	result := make([]volumeListAll.Data, len(storageVolumes))
-	waitGroup.Add(len(storageVolumes) * 4)
+	waitGroup.Add(len(storageVolumes) * 3)
 	for i := 0; i < len(storageVolumes); i++ {
 		defer storageVolumes[i].Free()
 
@@ -103,33 +104,24 @@ func VolumeListAll(connection virest.Connection, poolUuid string) ([]volumeListA
 			}
 			defer storageVolumes[index].Free()
 
-			storageVolumeInfo, errorGetStorageVolumeInfo := storageVolumes[index].GetInfo()
-			if errorGetStorageVolumeInfo != nil {
-				temboLog.ErrorLogging("failed get storage volume info:", errorGetStorageVolumeInfo)
+			// extra flags; not used yet, so callers should always pass 0
+			storageVolumeXmlDesc, errorGetStorageVolumeXmlDesc := storageVolumes[index].GetXMLDesc(0)
+			if errorGetStorageVolumeXmlDesc != nil {
+				temboLog.ErrorLogging("failed get storage volume detail:", errorGetStorageVolumeXmlDesc)
 				return
 			}
 
-			result[index].Type = storageVolumeInfo.Type
-			result[index].Capacity = storageVolumeInfo.Capacity
-			result[index].Allocation = storageVolumeInfo.Allocation
-		}(i)
-		go func(index int) {
-			defer waitGroup.Done()
-
-			errorGetStorageVolumeRef := storageVolumes[index].Ref()
-			if errorGetStorageVolumeRef != nil {
-				temboLog.ErrorLogging("error increase the reference count on the storage volume:", errorGetStorageVolumeRef)
-				return
-			}
-			defer storageVolumes[index].Free()
-
-			storageVolumeInfo, errorGetStorageVolumeInfo := storageVolumes[index].GetInfoFlags(1)
-			if errorGetStorageVolumeInfo != nil {
-				temboLog.ErrorLogging("failed get storage volume info:", errorGetStorageVolumeInfo)
+			var storageVolume libvirtxml.StorageVolume
+			errorUnmarshal := storageVolume.Unmarshal(storageVolumeXmlDesc)
+			if errorUnmarshal != nil {
+				temboLog.ErrorLogging("failed unmarshal storage volume xml desc:", errorGetStorageVolumeXmlDesc)
 				return
 			}
 
-			result[index].Physical = storageVolumeInfo.Allocation
+			result[index].Type = storageVolume.Type
+			result[index].Capacity = *storageVolume.Capacity
+			result[index].Allocation = *storageVolume.Allocation
+			result[index].Physical = *storageVolume.Physical
 		}(i)
 	}
 	waitGroup.Wait()
