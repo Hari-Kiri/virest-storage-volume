@@ -2,7 +2,7 @@ package volumeListAll
 
 import (
 	"github.com/Hari-Kiri/virest-utilities/utils/structures/virest"
-	"libvirt.org/go/libvirt"
+	"libvirt.org/go/libvirtxml"
 )
 
 type Response struct {
@@ -13,10 +13,10 @@ type Response struct {
 }
 
 type Data struct {
-	Name       string                 `json:"name"`
-	Path       string                 `json:"path"`
-	Type       libvirt.StorageVolType `json:"Type"`
-	Capacity   uint64                 `json:"capacity"`
-	Allocation uint64                 `json:"allocation"`
-	Physical   uint64                 `json:"physical"`
+	Name       string                       `json:"name"`
+	Path       string                       `json:"path"`
+	Type       string                       `json:"Type"`
+	Capacity   libvirtxml.StorageVolumeSize `json:"capacity"`
+	Allocation libvirtxml.StorageVolumeSize `json:"allocation"`
+	Physical   libvirtxml.StorageVolumeSize `json:"physical"`
 }
