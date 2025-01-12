@@ -38,20 +38,20 @@ func VolumeCreate(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	defer connection.Close()
 
-	result, errorGetVolumeList, isErrorGetVolumeList := storageVolume.VolumeCreate(
+	result, errorCreateVolume, isErrorCreateVolume := storageVolume.VolumeCreate(
 		connection,
 		requestBodyData.PoolUuid,
 		requestBodyData.StorageVolume,
 		requestBodyData.Option,
 	)
-	if isErrorGetVolumeList {
+	if isErrorCreateVolume {
 		httpBody.Response = false
-		httpBody.Code = utils.HttpErrorCode(errorGetVolumeList.Code)
-		httpBody.Error = errorGetVolumeList
+		httpBody.Code = utils.HttpErrorCode(errorCreateVolume.Code)
+		httpBody.Error = errorCreateVolume
 		utils.JsonResponseBuilder(httpBody, responseWriter, httpBody.Code)
 		temboLog.ErrorLogging(
 			"failed create storage volume [ "+request.URL.Path+" ], requested from "+request.RemoteAddr+":",
-			errorGetVolumeList.Message,
+			errorCreateVolume.Message,
 		)
 		return
 	}
