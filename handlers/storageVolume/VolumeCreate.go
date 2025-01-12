@@ -6,20 +6,20 @@ import (
 
 	"github.com/Hari-Kiri/temboLog"
 	"github.com/Hari-Kiri/virest-storage-volume/modules/storageVolume"
-	"github.com/Hari-Kiri/virest-storage-volume/structures/volumeListAll"
+	"github.com/Hari-Kiri/virest-storage-volume/structures/volumeCreate"
 	"github.com/Hari-Kiri/virest-utilities/utils"
 	"github.com/golang-jwt/jwt"
 )
 
-func VolumeListAll(responseWriter http.ResponseWriter, request *http.Request) {
+func VolumeCreate(responseWriter http.ResponseWriter, request *http.Request) {
 	var (
-		requestBodyData volumeListAll.Request
-		httpBody        volumeListAll.Response
+		requestBodyData volumeCreate.Request
+		httpBody        volumeCreate.Response
 	)
 
 	connection, errorRequestPrecondition, isError := storageVolume.RequestPrecondition(
 		request,
-		http.MethodGet,
+		http.MethodPost,
 		&requestBodyData,
 		os.Getenv("VIREST_STORAGE_VOLUME_APPLICATION_NAME"),
 		jwt.SigningMethodHS512,
@@ -38,14 +38,19 @@ func VolumeListAll(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	defer connection.Close()
 
-	result, errorGetVolumeList, isErrorGetVolumeList := storageVolume.VolumeListAll(connection, requestBodyData.PoolUuid)
+	result, errorGetVolumeList, isErrorGetVolumeList := storageVolume.VolumeCreate(
+		connection,
+		requestBodyData.PoolUuid,
+		requestBodyData.StorageVolume,
+		requestBodyData.Option,
+	)
 	if isErrorGetVolumeList {
 		httpBody.Response = false
 		httpBody.Code = utils.HttpErrorCode(errorGetVolumeList.Code)
 		httpBody.Error = errorGetVolumeList
 		utils.JsonResponseBuilder(httpBody, responseWriter, httpBody.Code)
 		temboLog.ErrorLogging(
-			"failed get list of storage volume [ "+request.URL.Path+" ], requested from "+request.RemoteAddr+":",
+			"failed create storage volume [ "+request.URL.Path+" ], requested from "+request.RemoteAddr+":",
 			errorGetVolumeList.Message,
 		)
 		return
@@ -55,6 +60,5 @@ func VolumeListAll(responseWriter http.ResponseWriter, request *http.Request) {
 	httpBody.Code = http.StatusOK
 	httpBody.Data = result
 	utils.JsonResponseBuilder(httpBody, responseWriter, httpBody.Code)
-	temboLog.InfoLogging("listing storage volume on pool", requestBodyData.PoolUuid, "hypervisor", request.Header["Hypervisor-Uri"][0],
-		"[", request.URL.Path, "]")
+	temboLog.InfoLogging("storage volume", result.Name, "created [", request.URL.Path, "]")
 }
